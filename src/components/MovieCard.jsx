@@ -58,7 +58,7 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
             dragMomentum={false}
             onDragEnd={handleDragEnd}
             whileTap={active ? { scale: 1.01 } : {}}
-            className="w-full max-w-[400px] h-[600px] cursor-grab active:cursor-grabbing touch-none"
+            className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
         >
             <div
                 className="card relative w-full h-full flex flex-col justify-end p-6 overflow-hidden bg-dark-card border border-white/10 shadow-2xl rounded-[32px] bg-cover bg-center"

@@ -143,7 +143,7 @@ function App() {
     }, [movies, showWatchlist, showFilters, selectedMovie, showDaily, showCategories, lastAction]);
 
     return (
-        <div className="flex flex-col h-screen bg-[#1A1A2E] text-white overflow-hidden font-sans select-none">
+        <div className="flex flex-col h-[100dvh] bg-[#1A1A2E] text-white overflow-hidden font-sans select-none">
             {showCategories ? (
                 <CategorySelection onSelect={handleGenreSelect} />
             ) : (
@@ -156,7 +156,7 @@ function App() {
                     />
 
                     <div className="flex-1 flex overflow-hidden">
-                        <main className="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden pt-20 pb-4 lg:py-0 lg:ml-0 transition-all duration-500">
+                        <main className="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden pt-16 pb-2 lg:py-0 lg:ml-0 transition-all duration-500">
                             {loading && (!movies || movies.length === 0) ? (
                                 <div className="flex flex-col items-center gap-4 animate-pulse">
                                     <Loader2 className="animate-spin text-[#FF4458]" size={48} />
@@ -164,7 +164,7 @@ function App() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="relative w-full max-w-[400px] h-[600px] flex items-center justify-center mb-8 scale-90 sm:scale-100 transition-transform">
+                                    <div className="relative w-full max-w-[360px] sm:max-w-[400px] h-[60vh] min-h-[450px] max-h-[600px] flex items-center justify-center mb-4 sm:mb-8 transition-transform">
                                         <AnimatePresence mode="popLayout">
                                             {movies?.slice(-3).map((movie, index, array) => (
                                                 <MovieCard
