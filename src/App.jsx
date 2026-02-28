@@ -164,7 +164,7 @@ function App() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="relative w-full max-w-[360px] sm:max-w-[400px] h-[60vh] min-h-[450px] max-h-[600px] flex items-center justify-center mb-4 sm:mb-8 transition-transform">
+                                    <div className="relative w-full max-w-[360px] sm:max-w-[400px] flex-1 min-h-[350px] max-h-[600px] mt-4 mb-4 flex items-center justify-center sm:mb-8 transition-transform">
                                         <AnimatePresence mode="popLayout">
                                             {movies?.slice(-3).map((movie, index, array) => (
                                                 <MovieCard
