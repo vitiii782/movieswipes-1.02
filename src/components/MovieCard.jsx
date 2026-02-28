@@ -96,52 +96,45 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
                     </div>
                 )}
 
-                <div className="z-10 w-full bg-gradient-to-t from-black/95 to-black/50 p-3 sm:p-4 rounded-2xl border border-white/5 shadow-2xl">
+                <div className="z-10 w-full bg-gradient-to-t from-black/95 via-black/80 to-transparent p-4 sm:p-5 rounded-b-2xl">
                     <div className="flex items-center gap-2 mb-1">
                         {isUpcoming ? (
-                            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase flex items-center gap-1">
-                                <Calendar size={9} /> {formattedRelease}
+                            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase">
+                                {formattedRelease}
                             </span>
                         ) : (
                             <span className="bg-gradient-to-r from-[#FF4458] to-[#FF6B81] px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase">
                                 New
                             </span>
                         )}
-                        <span className="text-gray-300 text-xs font-semibold">{movie.year}</span>
+                        <span className="text-gray-300 text-[10px] font-bold tracking-widest uppercase opacity-60">{movie.year}</span>
                     </div>
 
-                    <h2 className="text-2xl sm:text-3xl font-black leading-tight mb-2 tracking-tight" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                    <h2 className="text-xl sm:text-2xl font-black leading-none mb-2 tracking-tight line-clamp-1" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                         {movie.title}
                     </h2>
 
-                    <div className="flex items-center gap-4 text-xs font-bold mb-3">
+                    <div className="flex items-center gap-4 text-[11px] font-black text-gray-300 pb-1 uppercase tracking-wider">
                         <div className="flex items-center gap-1 text-accent-gold">
-                            <Star size={16} fill="currentColor" />
+                            <Star size={14} fill="currentColor" />
                             <span>{Number(movie?.rating || 0).toFixed(1)}</span>
                         </div>
                         {movie.runtime && (
-                            <div className="flex items-center gap-1 text-gray-300">
-                                <Clock size={16} />
+                            <div className="flex items-center gap-1 opacity-80">
+                                <Clock size={14} />
                                 <span>{movie.runtime}m</span>
                             </div>
                         )}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onInfoClick(movie);
+                            }}
+                            className="ml-auto text-[#FF4458] hover:text-white transition-colors flex items-center gap-0.5"
+                        >
+                            INFO <ChevronDown size={14} strokeWidth={3} />
+                        </button>
                     </div>
-
-                    <div className={`text-sm text-gray-200 transition-all duration-300 overflow-hidden ${expanded ? 'max-h-40' : 'max-h-12'}`}>
-                        <p className="line-clamp-2 leading-relaxed opacity-90">
-                            {movie.description}
-                        </p>
-                    </div>
-
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onInfoClick(movie);
-                        }}
-                        className="mt-3 text-[#FF4458] text-[13px] font-black flex items-center gap-1 hover:scale-105 transition-transform"
-                    >
-                        LEARN MORE <ChevronDown size={14} strokeWidth={3} />
-                    </button>
                 </div>
             </div>
         </motion.div>
