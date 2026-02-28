@@ -15,7 +15,7 @@ const MovieDetails = ({ movie, onClose }) => {
                 </button>
 
                 <div className="relative h-[250px] md:h-[350px]">
-                    <img src={movie.poster} alt={movie.title} className="w-full h-full object-cover" />
+                    <img src={movie.poster || (movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '')} alt={movie.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-transparent to-transparent" />
                 </div>
 

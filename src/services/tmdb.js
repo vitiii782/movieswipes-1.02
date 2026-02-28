@@ -98,6 +98,7 @@ export const tmdbService = {
         seasons: data.number_of_seasons || null,
         episodes: data.number_of_episodes || null,
         overview: data.overview || '',
+        poster: data.poster_path ? `${IMAGE_BASE_URL}${data.poster_path}` : null,
       };
     } catch (error) {
       console.error(`Error fetching ${type} details:`, error);
