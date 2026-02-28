@@ -38,12 +38,16 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
     return (
         <motion.div
             layout={false}
+            animate={{
+                scale,
+                y: yOffset
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             style={{
                 x,
                 rotate,
                 opacity: active ? opacity : 1,
-                scale,
-                y: yOffset,
                 zIndex: 50 - index,
                 position: 'absolute',
                 willChange: active ? 'transform' : 'auto',

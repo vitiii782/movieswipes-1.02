@@ -36,11 +36,17 @@ export const useMovies = () => {
             const filteredResults = results.filter(movie => !currentSeen.includes(movie.id));
             const sorted = [...filteredResults].sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
-            // Avoid adding duplicates if they're already in the current stack
+            // Avoid adding duplicates if they're already in the current stack or within the fetched batch
             setMovies(prev => {
                 const existingIds = new Set(prev.map(m => m.id));
-                const newMovies = sorted.reverse().filter(m => !existingIds.has(m.id));
-                return [...newMovies, ...prev];
+                const uniqueNewMovies = [];
+                for (const m of sorted.reverse()) {
+                    if (!existingIds.has(m.id)) {
+                        existingIds.add(m.id);
+                        uniqueNewMovies.push(m);
+                    }
+                }
+                return [...uniqueNewMovies, ...prev];
             });
 
             // Preload posters
