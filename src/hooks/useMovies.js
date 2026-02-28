@@ -17,7 +17,10 @@ export const useMovies = () => {
     const { filters, mediaType, currentUser } = useMovieStore();
 
     const fetchMovies = useCallback(async (currentFilters, currentType) => {
-        if (!currentUser) return;
+        if (!currentUser) {
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             // Standard discovery paging
