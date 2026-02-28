@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Star, Clock, ChevronDown, Check, X, Calendar } from 'lucide-react';
 
@@ -92,7 +92,7 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
                     </div>
                 )}
 
-                <div className="z-10 w-full backdrop-blur-sm bg-black/20 p-4 rounded-2xl border border-white/5">
+                <div className="z-10 w-full bg-gradient-to-t from-black/95 to-black/50 p-4 rounded-2xl border border-white/5 shadow-2xl">
                     <div className="flex items-center gap-2 mb-1">
                         {isUpcoming ? (
                             <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase flex items-center gap-1">
@@ -144,4 +144,10 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
     );
 };
 
-export default MovieCard;
+export default memo(MovieCard, (prevProps, nextProps) => {
+    return (
+        prevProps.movie.id === nextProps.movie.id &&
+        prevProps.active === nextProps.active &&
+        prevProps.index === nextProps.index
+    );
+});
