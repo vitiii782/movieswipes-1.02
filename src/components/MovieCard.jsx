@@ -96,7 +96,7 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
                     </div>
                 )}
 
-                <div className="z-10 w-full bg-gradient-to-t from-black/95 to-black/50 p-4 rounded-2xl border border-white/5 shadow-2xl">
+                <div className="z-10 w-full bg-gradient-to-t from-black/95 to-black/50 p-3 sm:p-4 rounded-2xl border border-white/5 shadow-2xl">
                     <div className="flex items-center gap-2 mb-1">
                         {isUpcoming ? (
                             <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase flex items-center gap-1">
@@ -110,7 +110,7 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
                         <span className="text-gray-300 text-xs font-semibold">{movie.year}</span>
                     </div>
 
-                    <h2 className="text-3xl font-black leading-tight mb-2 tracking-tight" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                    <h2 className="text-2xl sm:text-3xl font-black leading-tight mb-2 tracking-tight" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                         {movie.title}
                     </h2>
 
