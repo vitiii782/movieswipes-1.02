@@ -8,13 +8,13 @@ const MovieCard = ({ movie, onSwipe, onInfoClick, active, index }) => {
     // Reduced rotation range for a snappier feel
     const rotate = useTransform(x, [-300, 300], [-18, 18]);
     const opacity = useTransform(x, [-250, -150, 0, 150, 250], [0, 1, 1, 1, 0]);
-    const likeOpacity = useTransform(x, [40, 120], [0, 1]);
-    const nopeOpacity = useTransform(x, [-40, -120], [0, 1]);
+    const likeOpacity = useTransform(x, [20, 60], [0, 1]);
+    const nopeOpacity = useTransform(x, [-20, -60], [0, 1]);
 
     const handleDragEnd = (event, info) => {
-        if (info.offset.x > 90) {
+        if (info.offset.x > 50) {
             onSwipe('right', movie);
-        } else if (info.offset.x < -90) {
+        } else if (info.offset.x < -50) {
             onSwipe('left', movie);
         }
     };
