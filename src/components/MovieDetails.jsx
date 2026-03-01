@@ -51,6 +51,26 @@ const MovieDetails = ({ movie, onClose }) => {
                         </p>
                     </div>
 
+                    {movie.trailerKey && (
+                        <div className="mb-10 animate-fade-in" id="trailer-section">
+                            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+                                <span className="w-1.5 h-6 bg-tinder-gradient rounded-full" />
+                                Official Trailer
+                            </h3>
+                            <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src={`https://www.youtube.com/embed/${movie.trailerKey}?autoplay=0&rel=0`}
+                                    title="Movie Trailer"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        </div>
+                    )}
+
                     {movie?.watchProviders && Array.isArray(movie.watchProviders) && movie.watchProviders.length > 0 && (
                         <div className="mb-10 animate-fade-in">
                             <h3 className="text-xl font-black mb-4 flex items-center gap-3">
@@ -90,7 +110,13 @@ const MovieDetails = ({ movie, onClose }) => {
                             TMDB <ExternalLink size={18} />
                         </button>
                         <button
-                            onClick={() => window.open(`https://www.youtube.com/results?search_query=${movie.title}+trailer`, '_blank')}
+                            onClick={() => {
+                                if (movie.trailerKey) {
+                                    document.getElementById('trailer-section')?.scrollIntoView({ behavior: 'smooth' });
+                                } else {
+                                    window.open(`https://www.youtube.com/results?search_query=${movie.title}+trailer`, '_blank');
+                                }
+                            }}
                             className="flex-1 py-4 bg-tinder-gradient hover:opacity-90 rounded-2xl font-bold shadow-xl shadow-primary-start/20 transition-all text-white active:scale-95"
                         >
                             Watch Trailer

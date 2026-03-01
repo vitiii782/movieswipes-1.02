@@ -63,10 +63,14 @@ export const tmdbService = {
 
   getMovieDetails: async (id, type = 'movie') => {
     try {
-      const [details, watchProviders] = await Promise.all([
+      const [details, watchProviders, videos] = await Promise.all([
         tmdbApi.get(`/${type}/${id}`),
         tmdbApi.get(`/${type}/${id}/watch/providers`),
+        tmdbApi.get(`/${type}/${id}/videos`),
       ]);
+
+      const trailer = videos.data.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+      const trailerKey = trailer?.key || videos.data.results?.[0]?.key;
 
       const region = 'DE'; // Default to DE for now
       const providersData = watchProviders.data.results?.[region] || {};
@@ -100,6 +104,7 @@ export const tmdbService = {
         episodes: data.number_of_episodes || null,
         overview: data.overview || '',
         poster: data.poster_path ? `${IMAGE_BASE_URL}${data.poster_path}` : null,
+        trailerKey,
       };
     } catch (error) {
       console.error(`Error fetching ${type} details:`, error);
