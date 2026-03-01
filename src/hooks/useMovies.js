@@ -77,54 +77,64 @@ export const useMovies = () => {
             isFetchingRef.current = false;
             setLoading(true);
 
-            // 1. Pick a random starting page for the first fetch to ensure immediate variety.
-            // We use a safe range (1-15) initially as most categories have this many pages.
-            const initialPage = Math.floor(Math.random() * 15) + 1;
-            const first = await tmdbService.getMovies(initialPage, filters, mediaType);
+            // 1. Fetch metadata (page 1) to learn exactly how many pages exist
+            // This prevents requesting a page that doesn't exist (e.g. page 15 of 3)
+            const first = await tmdbService.getMovies(1, filters, mediaType);
             if (cancelled) return;
 
-            let results = first.results || [];
             const totalPages = first.totalPages || 1;
             totalPagesRef.current = totalPages;
 
-            // 2. If the random page was empty (too high), fallback to page 1
-            let actualStartPage = initialPage;
-            if (results.length === 0 && initialPage > 1) {
-                const fallback = await tmdbService.getMovies(1, filters, mediaType);
-                if (cancelled) return;
-                results = fallback.results || [];
+            // 2. Pick a random starting page based on REAL totalPages
+            const randomStartPage = totalPages > 1
+                ? Math.floor(Math.random() * Math.min(totalPages, 20)) + 1
+                : 1;
+
+            let mainResults = [];
+            let actualStartPage = 1;
+
+            if (randomStartPage === 1) {
+                mainResults = first.results || [];
                 actualStartPage = 1;
+            } else {
+                const randomBatch = await tmdbService.getMovies(randomStartPage, filters, mediaType);
+                if (cancelled) return;
+                mainResults = randomBatch.results || [];
+                actualStartPage = randomStartPage;
+
+                // If the random page happened to be empty (rare with real totalPages), fallback to page 1
+                if (mainResults.length === 0) {
+                    mainResults = first.results || [];
+                    actualStartPage = 1;
+                }
             }
 
             const persistedSeen = currentUser?.seenIds?.[mediaType] || [];
-            const filteredResults = results.filter(m => {
+            const filterBatch = (batch) => batch.filter(m => {
                 if (persistedSeen.includes(m.id)) return false;
+                if (sessionSeenRef.current.has(m.id)) return false;
                 sessionSeenRef.current.add(m.id);
                 return true;
             });
 
-            // Sort and set as initial stack (top-last for Tinder card pile)
-            const sorted = [...filteredResults].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            const filteredMain = filterBatch(mainResults);
+
+            // Sort and set as initial stack
+            const sorted = [...filteredMain].sort((a, b) => (b.rating || 0) - (a.rating || 0));
             setMovies(sorted.reverse());
             sorted.forEach(m => { if (m.poster) { const img = new Image(); img.src = m.poster; } });
 
-            // 3. Pre-fetch another random page to fill the bottom of the stack
-            if (totalPages > 1 && !cancelled) {
-                let secondPage = Math.floor(Math.random() * Math.min(totalPages, 20)) + 1;
+            // 3. If stack is still very small, try one more random page to fill up
+            if (filteredMain.length < 10 && totalPages > 1 && !cancelled) {
+                let secondPage = Math.floor(Math.random() * Math.min(totalPages, 40)) + 1;
                 if (secondPage === actualStartPage) secondPage = (secondPage % totalPages) + 1;
 
                 const second = await tmdbService.getMovies(secondPage, filters, mediaType);
                 if (cancelled) return;
-                const secondResults = (second.results || []).filter(m => {
-                    if (sessionSeenRef.current.has(m.id)) return false;
-                    if (persistedSeen.includes(m.id)) return false;
-                    sessionSeenRef.current.add(m.id);
-                    return true;
-                });
-                const sorted2 = [...secondResults].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                const filteredSecond = filterBatch(second.results || []);
+                const sorted2 = [...filteredSecond].sort((a, b) => (b.rating || 0) - (a.rating || 0));
                 setMovies(prev => [...sorted2.reverse(), ...prev]);
                 sorted2.forEach(m => { if (m.poster) { const img = new Image(); img.src = m.poster; } });
-
                 nextPageRef.current = secondPage + 1;
             } else {
                 nextPageRef.current = actualStartPage + 1;
