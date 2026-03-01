@@ -82,16 +82,34 @@ const CategorySelection = ({ onSelect }) => {
                     {GENRES.map((genre, index) => (
                         <motion.button
                             key={genre.id}
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            whileHover={{ scale: 1.02, y: -5 }}
-                            whileTap={{ scale: 0.98 }}
+                            transition={{
+                                delay: index * 0.04,
+                                duration: 0.4,
+                                ease: "easeOut"
+                            }}
+                            whileHover="hover"
+                            whileTap="tap"
+                            variants={{
+                                hover: {
+                                    scale: 1.02,
+                                    y: -8,
+                                    transition: { type: "spring", stiffness: 400, damping: 25 }
+                                },
+                                tap: { scale: 0.98 }
+                            }}
                             onClick={() => onSelect(genre)}
-                            className={`relative group h-64 rounded-3xl overflow-hidden bg-gradient-to-br ${genre.color} shadow-xl flex flex-col items-start justify-end p-8 transition-all hover:shadow-2xl hover:shadow-rose-500/10 border border-white/5`}
+                            className={`relative group h-64 rounded-3xl overflow-hidden bg-gradient-to-br ${genre.color} shadow-lg flex flex-col items-start justify-end p-8 border border-white/5`}
                         >
                             {/* Movie Previews Background */}
-                            <div className="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition-opacity flex">
+                            <motion.div
+                                variants={{
+                                    hover: { opacity: 0.7, scale: 1.05 }
+                                }}
+                                transition={{ duration: 0.3 }}
+                                className="absolute inset-0 z-0 opacity-40 flex"
+                            >
                                 {previews[genre.id]?.map((movie, idx) => (
                                     <div
                                         key={movie.id}
@@ -99,21 +117,31 @@ const CategorySelection = ({ onSelect }) => {
                                         style={{ backgroundImage: `url(${movie.poster})` }}
                                     />
                                 ))}
-                                {/* Fallback if no previews */}
                                 {(!previews[genre.id] || previews[genre.id].length === 0) && (
                                     <div className="absolute inset-0 bg-black/20" />
                                 )}
-                            </div>
+                            </motion.div>
 
                             {/* Overlays */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F1A] via-[#0F0F1A]/40 to-transparent z-10" />
-                            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10" />
+                            <motion.div
+                                variants={{
+                                    hover: { opacity: 0 }
+                                }}
+                                className="absolute inset-0 bg-black/15 z-10"
+                            />
 
                             {/* Content */}
                             <div className="relative z-20 flex flex-col items-start gap-2">
-                                <div className={`p-3 rounded-2xl bg-white/10 backdrop-blur-md mb-2 group-hover:scale-110 transition-transform`}>
+                                <motion.div
+                                    variants={{
+                                        hover: { scale: 1.15, rotate: -5 }
+                                    }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                    className="p-3 rounded-2xl bg-white/10 backdrop-blur-md mb-2"
+                                >
                                     <genre.icon size={28} className="text-white" />
-                                </div>
+                                </motion.div>
                                 <h3 className="text-2xl font-black tracking-tight text-white mb-1 uppercase italic">{genre.name}</h3>
                                 <div className="flex items-center gap-3">
                                     <div className="flex -space-x-2">
@@ -132,9 +160,15 @@ const CategorySelection = ({ onSelect }) => {
                             </div>
 
                             {/* Decorative Icon */}
-                            <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-20 transition-opacity z-20">
+                            <motion.div
+                                variants={{
+                                    hover: { opacity: 0.25, x: -10, scale: 1.1 }
+                                }}
+                                transition={{ duration: 0.3 }}
+                                className="absolute top-6 right-6 opacity-0 z-20"
+                            >
                                 <genre.icon size={64} />
-                            </div>
+                            </motion.div>
                         </motion.button>
                     ))}
                 </div>
