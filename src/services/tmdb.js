@@ -25,6 +25,7 @@ export const tmdbService = {
         'vote_count.gte': 500,
         with_genres: filters.genreId || '',
         with_original_language: 'en|ja|ko|fr|es|de|it',
+        with_keywords: filters.keywords || '',
         certification_country: filters.certificationCountry || '',
         certification: filters.certification || '',
         ...(type === 'movie'
