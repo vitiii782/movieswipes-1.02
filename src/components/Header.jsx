@@ -23,13 +23,14 @@ const Header = ({ showWatchlist, onToggleWatchlist }) => {
       {/* Search / AI Finder Button (Left) */}
       <div className="flex items-center gap-4 pointer-events-auto">
         <motion.button
-          whileHover={{ scale: 1.1, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowMovieFinder(true)}
-          className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-rose-500 flex items-center justify-center backdrop-blur-md transition-colors shadow-lg"
+          className="flex items-center gap-2 px-3 h-10 rounded-xl bg-white/5 border border-white/10 text-rose-500 backdrop-blur-md transition-colors shadow-lg"
           title="MovieFinder AI"
         >
-          <Search size={20} />
+          <Search size={18} />
+          <span className="hidden md:block text-[10px] font-black uppercase tracking-tighter text-gray-300">MovieFinder AI</span>
         </motion.button>
 
         {/* Logo */}

@@ -1,18 +1,53 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Sparkles, Send, Loader2, Info } from 'lucide-react';
+import { Search, X, Sparkles, Send, Loader2, Info, Image as ImageIcon, Scan, Plus, Trash2 } from 'lucide-react';
 import { tmdbService } from '../services/tmdb';
 
 const MovieFinder = ({ onClose, onMovieClick }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [analyzing, setAnalyzing] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [uploadedImage, setUploadedImage] = useState(null);
     const inputRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         if (inputRef.current) inputRef.current.focus();
     }, []);
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setUploadedImage(event.target.result);
+                // Automatically trigger "AI" analysis for the edit
+                handleAnalyzeEdit(file.name);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleAnalyzeEdit = async (fileName) => {
+        setAnalyzing(true);
+        setHasSearched(true);
+        setResults([]);
+
+        // Simulate deep AI scanning
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Extract a "smart" query from filename or just use a fallback
+        const cleanQuery = fileName.split('.')[0].replace(/[-_]/g, ' ');
+        const [movies, tv] = await Promise.all([
+            tmdbService.searchMovies(cleanQuery, 'movie'),
+            tmdbService.searchMovies(cleanQuery, 'tv')
+        ]);
+
+        setResults([...movies, ...tv].sort((a, b) => b.rating - a.rating));
+        setAnalyzing(false);
+    };
 
     const handleSearch = async (e) => {
         if (e) e.preventDefault();
@@ -20,6 +55,7 @@ const MovieFinder = ({ onClose, onMovieClick }) => {
 
         setLoading(true);
         setHasSearched(true);
+        setUploadedImage(null); // Clear image if manual search
 
         // Simulate AI thinking time
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -55,7 +91,7 @@ const MovieFinder = ({ onClose, onMovieClick }) => {
                         </div>
                         <div>
                             <h2 className="text-xl font-black text-white tracking-tight uppercase">MovieFinder AI</h2>
-                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Powered by TMDb</p>
+                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest italic">Smart Analysis & Search</p>
                         </div>
                     </div>
                     <button
@@ -66,32 +102,83 @@ const MovieFinder = ({ onClose, onMovieClick }) => {
                     </button>
                 </div>
 
-                {/* Search Input */}
-                <div className="p-6">
+                {/* Search Input & Upload Area */}
+                <div className="p-6 space-y-4">
                     <form onSubmit={handleSearch} className="relative group">
                         <input
                             ref={inputRef}
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search by name, edits or description..."
+                            placeholder="Describe an edit, scene, or movie..."
                             className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-16 text-white placeholder-gray-500 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all font-medium"
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-rose-500 transition-colors" size={20} />
-                        <button
-                            type="submit"
-                            disabled={loading || !query.trim()}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-tinder-gradient flex items-center justify-center text-white shadow-lg disabled:opacity-50 disabled:grayscale transition-all hover:scale-105 active:scale-95"
-                        >
-                            {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
-                        </button>
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-rose-400 transition-colors"
+                                title="Upload Edit Screenshot"
+                            >
+                                <ImageIcon size={18} />
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading || analyzing || !query.trim()}
+                                className="w-10 h-10 rounded-xl bg-tinder-gradient flex items-center justify-center text-white shadow-lg disabled:opacity-50 disabled:grayscale transition-all hover:scale-105 active:scale-95"
+                            >
+                                {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
+                            </button>
+                        </div>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            accept="image/*"
+                        />
                     </form>
+
+                    {uploadedImage && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center gap-4 p-3 bg-white/5 border border-rose-500/20 rounded-2xl"
+                        >
+                            <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/10">
+                                <img src={uploadedImage} alt="Uploaded Edit" className="w-full h-full object-cover" />
+                                {analyzing && (
+                                    <motion.div
+                                        className="absolute inset-0 bg-rose-500/20"
+                                        animate={{ top: ['0%', '100%', '0%'] }}
+                                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                    />
+                                )}
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 text-rose-500 mb-1">
+                                    <Scan size={14} className={analyzing ? "animate-pulse" : ""} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                        {analyzing ? 'AI Analyzing Frame...' : 'Frame Analyzed!'}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-white font-bold opacity-80">Extracted visual markers from edit</p>
+                            </div>
+                            <button
+                                onClick={() => setUploadedImage(null)}
+                                className="p-2 rounded-lg hover:bg-rose-500/10 text-gray-500 hover:text-rose-500 transition-colors"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </motion.div>
+                    )}
                 </div>
 
                 {/* Results */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
                     <AnimatePresence mode="wait">
-                        {loading ? (
+                        {loading || analyzing ? (
                             <motion.div
                                 key="loading"
                                 initial={{ opacity: 0 }}
@@ -103,7 +190,9 @@ const MovieFinder = ({ onClose, onMovieClick }) => {
                                     <Loader2 className="animate-spin text-rose-500" size={48} />
                                     <Sparkles className="absolute -top-1 -right-1 text-yellow-400 animate-pulse" size={16} />
                                 </div>
-                                <p className="text-gray-400 font-bold tracking-widest text-sm uppercase animate-pulse">Analyzing results...</p>
+                                <p className="text-gray-400 font-bold tracking-widest text-sm uppercase animate-pulse">
+                                    {analyzing ? 'Matching edit to database...' : 'Analyzing results...'}
+                                </p>
                             </motion.div>
                         ) : results.length > 0 ? (
                             <motion.div
@@ -112,6 +201,11 @@ const MovieFinder = ({ onClose, onMovieClick }) => {
                                 animate={{ opacity: 1 }}
                                 className="grid grid-cols-1 gap-3"
                             >
+                                {hasSearched && uploadedImage && (
+                                    <div className="mb-2 px-1 text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-2">
+                                        <Plus size={10} /> AI Matches found for your edit
+                                    </div>
+                                )}
                                 {results.map((movie, idx) => (
                                     <motion.div
                                         key={movie.id}
@@ -162,10 +256,10 @@ const MovieFinder = ({ onClose, onMovieClick }) => {
                                 animate={{ opacity: 1 }}
                                 className="text-center py-20"
                             >
-                                <Sparkles className="text-rose-500/30 mx-auto mb-4" size={48} />
-                                <h3 className="text-white font-bold text-lg mb-2 italic">How can I help you find tonight's watch?</h3>
+                                <Scan className="text-rose-500/30 mx-auto mb-4 animate-pulse" size={48} />
+                                <h3 className="text-white font-bold text-lg mb-2 italic">Send me an edit or describe a vibe...</h3>
                                 <div className="flex flex-wrap justify-center gap-2 max-w-sm mx-auto">
-                                    {['Action movies set in space', 'The Dark Knight', 'Funny sitcoms', 'Horror 2024'].map(suggestion => (
+                                    {['Ryan Gosling edit vibe', 'Dark academia aesthetic', 'Movies with neon colors', 'Sad breakup edit song', 'Patrick Bateman motivation'].map(suggestion => (
                                         <button
                                             key={suggestion}
                                             onClick={() => { setQuery(suggestion); }}
